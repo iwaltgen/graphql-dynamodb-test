@@ -1,0 +1,80 @@
+
+# Authorization: Bearer {{Token}}
+# {{Token}} -> JWT claims: sa_id:stb_mac? aes256?
+# userId -> sa_id:stb_mac?
+
+input CommentKeyInput {
+  appId: String!
+  contentId: String!
+  userId: String!
+  created: String! # RFC3339 Datetime
+}
+
+type CommentKey {
+  appId: String!
+  contentId: String!
+  userId: String!
+  created: String! # RFC3339 Datetime
+}
+
+type CommentList {
+  totalCount: Int
+  lastKey: CommentKey
+  comments: [Comment!]
+}
+
+type Comment {
+  appId: String
+  contentId: String
+  userId: String
+  comment: String
+  created: String # RFC3339 Datetime
+}
+
+input CommentInput {
+  appId: String!
+  contentId: String!
+  comment: String!
+}
+
+enum ReactionType {
+  LIKE
+  HATE
+}
+
+input ReactionKeyInput {
+  appId: String!
+  contentId: String!
+}
+
+type ReactionDetail {
+  type: ReactionType!
+  created: String!
+}
+
+type ReactionCount {
+  type: ReactionType!
+  count: Int!
+}
+
+type ReactionStats {
+  reactions: [ReactionCount!]!
+  me: ReactionDetail
+}
+
+type Query {
+  comments(size: Int = 10, lastKey: CommentKeyInput): CommentList!
+  reactionStats(key: ReactionKeyInput!): ReactionStats!
+}
+
+type Mutation {
+  # authToken
+  # refreshToken
+
+  createComment(comment: CommentInput!): CommentKey!
+  updateComment(key: CommentKeyInput!, comment: String!): CommentKey!
+  deleteComment(key: CommentKeyInput!): CommentKey!
+
+  updateReaction(key: ReactionKeyInput!, type: ReactionType!): Boolean
+  deleteReaction(key: ReactionKeyInput!): Boolean
+}
