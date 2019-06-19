@@ -4,18 +4,28 @@ service: graphql-dynamodb-test
 # Add the serverless-webpack plugin
 plugins:
 - serverless-webpack
+- serverless-dynamodb-local
 - serverless-offline
 
 provider:
   name: aws
   runtime: nodejs10.x
-  profile: medialog
+  profile: iwaltgen
   stage: ${opt:stage, 'dev'} # Set the default stage used. Default is dev
   region: ${opt:region, 'ap-northeast-2'} # Overwrite the default region used. Default is us-east-1
   memorySize: 512 # Overwrite the default memory size. Default is 1024
   timeout: 10 # The default is 6 seconds. Note: API Gateway current maximum is 30 seconds
   environment:
     DYNAMODB_CONTENT_COMMENT_TABLE: ${self:service}-${opt:stage, self:provider.stage}-Content-Comment
+  iamRoleStatements:
+  - Effect: Allow
+    Action:
+      - dynamodb:Query
+      - dynamodb:GetItem
+      - dynamodb:PutItem
+      - dynamodb:UpdateItem
+      - dynamodb:DeleteItem
+    Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_CONTENT_COMMENT_TABLE}"
 
 functions:
   graphql:
@@ -35,17 +45,31 @@ resources:
     contentCommentTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: ${self:service}-${opt:stage, self:provider.stage}-Content-Comment
+        TableName: ${self:provider.environment.DYNAMODB_CONTENT_COMMENT_TABLE}
         AttributeDefinitions:
-        - AttributeName: app_content_id
+        - AttributeName: dpk # app_id#content_id
           AttributeType: S
-        - AttributeName: timestamp_user_id
-          AttributeType: S
-        - AttributeName: comment
+        - AttributeName: dsk # created#user_id
           AttributeType: S
         KeySchema:
-        - AttributeName: app_content_id
+        - AttributeName: dpk
           KeyType: HASH
-        - AttributeName: timestamp_user_id
+        - AttributeName: dsk
           KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
+
+custom:
+  dynamodb:
+    stages:
+    # If you only want to use DynamoDB Local in some stages, declare them here
+    - dev
+    start:
+      port: 8000
+      inMemory: true
+      heapInitial: 256m
+      heapMax: 512m
+      migrate: true
+      # seed: true
+      convertEmptyValues: true
+    # Uncomment only if you already have a DynamoDB running locally
+    # noStart: true
