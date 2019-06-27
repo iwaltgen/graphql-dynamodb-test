@@ -8,19 +8,19 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "apollo-server-lambda": "^2.6.3",
-    "graphql": "^14.3.1",
+    "apollo-server-lambda": "^2.6.7",
+    "graphql": "^14.4.0",
     "source-map-support": "^0.5.10"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.17",
-    "@types/node": "^10.12.18",
+    "@types/node": "^10.14.10",
     "serverless-dynamodb-local": "^0.2.38",
-    "serverless-offline": "^5.3.3",
+    "serverless-offline": "^5.5.0",
     "serverless-webpack": "^5.2.0",
     "ts-loader": "^5.3.3",
     "typescript": "^3.2.4",
-    "webpack": "^4.29.0"
+    "webpack": "^4.35.0"
   },
   "license": "MIT"
 }

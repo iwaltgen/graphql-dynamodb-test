@@ -47,9 +47,9 @@ resources:
       Properties:
         TableName: ${self:provider.environment.DYNAMODB_CONTENT_COMMENT_TABLE}
         AttributeDefinitions:
-        - AttributeName: dpk # app_id#content_id
+        - AttributeName: dpk
           AttributeType: S
-        - AttributeName: dsk # created#user_id
+        - AttributeName: dsk
           AttributeType: S
         KeySchema:
         - AttributeName: dpk
